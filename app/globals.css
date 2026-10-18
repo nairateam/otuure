@@ -1,26 +1,295 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Otuure design tokens. The full spec lives in CLAUDE.md.
+ * Tailwind v4 turns every token below into utilities:
+ *   --color-ink      → bg-ink, text-ink, border-ink
+ *   --font-display   → font-display
+ *   --text-display   → text-display (size + line height + tracking + weight)
+ *   --spacing-gutter → px-gutter, gap-gutter, ...
+ *   --radius-md      → rounded-md
+ *   --ease-enter     → ease-enter
+ */
+@theme {
+  /* Colour */
+  --color-ink: #1c1714;
+  --color-night: #2a2a2b;
+  --color-cream: #efe9e2;
+  --color-paper: #f7f3ee;
+  --color-muted: #6e625a;
+  --color-line: #d9cfc4;
+  --color-accent: #a9472a;
+  --color-accent-on-dark: #e07a55;
+  --color-card: #fbf8f4; /* chat card surface on cream */
+
+  /* Type families (variables are set by next/font in app/layout.tsx) */
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-body: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+
+  /* Type scale — desktop sizes from the spec, fluid down to mobile */
+  --text-display: clamp(3.5rem, 1.6rem + 7.4vw, 8.5rem); /* 116–136 */
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.036em; /* −4 to −5 */
+  --text-display--font-weight: 300;
+
+  --text-hero: clamp(3.25rem, 1.2rem + 6.4vw, 6rem); /* hero headline, 96 on desktop */
+  --text-hero--line-height: 0.95;
+  --text-hero--letter-spacing: -0.036em;
+  --text-hero--font-weight: 300;
+
+  --text-headline: clamp(2.5rem, 1.4rem + 3.6vw, 4.75rem); /* 64–76 */
+  --text-headline--line-height: 1;
+  --text-headline--letter-spacing: -0.035em; /* −2.5 */
+  --text-headline--font-weight: 300;
+
+  --text-statement: clamp(1.875rem, 1.3rem + 1.9vw, 3.25rem); /* 44–52 */
+  --text-statement--line-height: 1.1;
+  --text-statement--font-weight: 300;
+
+  --text-stat: clamp(2.5rem, 1.5rem + 3vw, 4.5rem); /* 48–72 */
+  --text-stat--line-height: 1;
+  --text-stat--letter-spacing: -0.033em; /* −2 */
+  --text-stat--font-weight: 400;
+
+  --text-italic: clamp(1.5rem, 1.25rem + 0.8vw, 2.125rem); /* italic accent 26–34 */
+  --text-italic--line-height: 1.2;
+
+  --text-discipline: clamp(3.5rem, 1rem + 8vw, 8.25rem); /* 92–132, uppercase */
+  --text-discipline--line-height: 1;
+  --text-discipline--letter-spacing: -0.06em; /* −6 to −8 */
+  --text-discipline--font-weight: 300;
+
+  --text-body: 1rem; /* 16 */
+  --text-body--line-height: 1.55;
+  --text-body-lg: 1.125rem; /* 18 */
+  --text-body-lg--line-height: 1.55;
+
+  --text-label: 0.75rem; /* 12–13, uppercase */
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.16em; /* +1.6 to +2.4 */
+  --text-label--font-weight: 600;
+
+  --text-button: 0.9375rem; /* 15–16 */
+  --text-button--line-height: 1;
+  --text-button--font-weight: 600;
+
+  /* Spacing */
+  --spacing-gutter: 64px;
+  --spacing-section: 140px;
+  --spacing-column: 96px;
+  --spacing-card: 20px;
+  --spacing-stack-xs: 12px;
+  --spacing-stack-sm: 24px;
+  --spacing-stack-md: 32px;
+  --spacing-stack-lg: 40px;
+  --spacing-stack-xl: 48px;
+
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-bubble: 24px;
+  --radius-tail: 6px;
+  --radius-arch: 280px;
+
+  /* Effects */
+  --shadow-book: 0 24px 48px rgb(0 0 0 / 0.5);
+  --blur-glass: 24px;
+
+  /* Motion */
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-screen: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Values band: one pass per 40s, linear */
+  --animate-marquee: marquee 40s linear infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root {
+  --duration-press: 120ms;
+  --duration-hover: 240ms;
+  --duration-standard: 480ms;
+  --duration-reveal: 800ms;
+  --duration-hero: 1200ms;
+  --stagger: 70ms;
+}
+
+/* Spec spacing is desktop; tighten on smaller screens */
+@media (max-width: 1023px) {
+  :root {
+    --spacing-gutter: 32px;
+    --spacing-section: 96px;
+    --spacing-column: 48px;
+  }
+}
+@media (max-width: 639px) {
+  :root {
+    --spacing-gutter: 20px;
+    --spacing-section: 72px;
+    --spacing-column: 32px;
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-paper);
+  }
+}
+
+@layer components {
+  /* Frosted glass: white 8–12%, white 18–20% border, 24px blur */
+  .glass {
+    background: rgb(255 255 255 / 0.1);
+    border: 1px solid rgb(255 255 255 / 0.19);
+    backdrop-filter: blur(var(--blur-glass));
+    -webkit-backdrop-filter: blur(var(--blur-glass));
+  }
+
+  /* Chat bubbles: 24 radius with a 6 "tail" corner */
+  .bubble {
+    border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-bubble) var(--radius-tail);
+  }
+  .bubble-out {
+    border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-tail) var(--radius-bubble);
+  }
+
+  /* Philosophy photo arch top */
+  .arch {
+    border-radius: var(--radius-arch) var(--radius-arch) 0 0;
+  }
+
+  /* Pill button: arrow nudges 4px on hover, shrinks to 98% when pressed */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    border-radius: 9999px;
+    padding: 1rem 1.75rem;
+    font-size: var(--text-button);
+    font-weight: 600;
+    line-height: 1;
+    transition: transform var(--duration-press) var(--ease-enter),
+      background-color var(--duration-hover) var(--ease-enter),
+      color var(--duration-hover) var(--ease-enter);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn [data-arrow] {
+    display: inline-block;
+    transition: transform var(--duration-hover) var(--ease-enter);
+  }
+  .btn:hover [data-arrow] {
+    transform: translateX(4px);
+  }
+
+  /* Link underline draws in from the left */
+  .link {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size var(--duration-hover) var(--ease-enter);
+  }
+  .link:hover,
+  .link:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  /* Section label ("01 — About") */
+  .label {
+    font-size: var(--text-label);
+    font-weight: 600;
+    line-height: var(--text-label--line-height);
+    letter-spacing: var(--text-label--letter-spacing);
+    text-transform: uppercase;
+  }
+}
+
+@layer components {
+  /* Preloader plays once per session */
+  html[data-intro="seen"] [data-preloader] {
+    display: none;
+  }
+
+  /* Elements GSAP reveals on load start hidden so there is no flash before hydration */
+  .reveal {
+    visibility: hidden;
+  }
+
+  /* Chat "typing…" dots */
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-muted);
+    animation: typing 1s var(--ease-screen) infinite;
+  }
+  .typing-dot:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .typing-dot:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* Reduced motion: keep only short fades */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 200ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 200ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Floating WhatsApp button: rises in once the page has settled */
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.9);
+  }
+}
+
+/* Music toggle: equaliser bars */
+@keyframes eq {
+  from {
+    transform: scaleY(0.35);
+  }
 }
